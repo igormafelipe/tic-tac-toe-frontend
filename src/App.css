@@ -1,0 +1,107 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Adjust the height based on your needs */
+}
+
+.big-button {
+  font-size: 2em; /* Adjust the font size to make the buttons big */
+  padding: 15px 30px; /* Adjust padding for better appearance */
+  margin: 10px; /* Adjust margin between buttons */
+}
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.game-info {
+  text-align: center;
+}
+
+.game-code {
+  font-size: 2em; /* Adjust the font size for the game code */
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.tic-tac-toe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.status {
+  margin-bottom: 10px;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-gap: 5px;
+}
+
+.square {
+  width: 100px;
+  height: 100px;
+  font-size: 2em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.square:hover {
+  background-color: #e0e0e0;
+}
