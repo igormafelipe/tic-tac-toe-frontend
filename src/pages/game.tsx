@@ -1,80 +1,89 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import '../App.css';
+import io from 'socket.io-client';
+import { useNavigate } from "react-router-dom";
+import WaitingForPlayer from '../components/waiting_for_player';
+import Loading from '../components/loading';
+import GameBoard from '../components/game_board';
+
 
 function Game() {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [xIsNext, setXIsNext] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const data = location.state;
 
-  const handleClick = (index) => {
-    // Do nothing if the square is already filled or the game is won
-    if (calculateWinner(board) || board[index]) {
+  if (!data) {
+    window.location.href = "/";
+  }
+
+  const [socket, setSocket] = useState(io());
+  const [gameState, setGameState] = useState("none");
+
+  useEffect(() => {
+    if (gameState === "connected_to_socket") {
+      console.log("Socket already exists")
       return;
     }
 
-    // Create a copy of the current board state
-    const newBoard = board.slice();
-    // Update the clicked square with 'X' or 'O' based on the current player
-    newBoard[index] = xIsNext ? 'X' : 'O';
+    console.log("Creating new socket");
+  
+    const newSocket = io('http://127.0.0.1:5000');
 
-    // Update the board and toggle the player
-    setBoard(newBoard);
-    setXIsNext(!xIsNext);
-  };
+    newSocket.on('connect', () => {
+      console.log("Connected to socket");
+      setGameState("connected_to_socket");
+      setSocket(newSocket);
+    });
+  
+    // Cleanup socket when component unmounts
+    return () => {
+      newSocket.disconnect();
+      setGameState("none");
+    };
+  }, []);
 
-  const renderSquare = (index) => (
-    <button className="square" onClick={() => handleClick(index)}>
-      {board[index]}
-    </button>
-  );
+  useEffect(() => {
+    if (!socket || gameState !== "connected_to_socket") {
+      console.log("here")
+      return;
+    }
 
-  const winner = calculateWinner(board);
-  const status = winner
-    ? `Winner: ${winner}`
-    : `Next player: ${xIsNext ? 'X' : 'O'}`;
+    setGameState("loading");
+
+    socket.emit('join_game', { "id": data.room_id });
+
+    const handlePlayer1Joined = () => {
+      setGameState("waiting_for_player_2");
+    };
+
+    const handlePlayer2Joined = () => {
+      setGameState("game_in_progress");
+    };
+
+    const handleGameNotFound = () => {
+      alert("Game not found!");
+    };
+
+    const handleUnableToJoinGame = () => {
+      alert("Unable to join game!");
+      navigate("/");
+    };
+
+    socket.on('player_1_joined', handlePlayer1Joined);
+    socket.on('player_2_joined', handlePlayer2Joined);
+    socket.on('game_not_found', handleGameNotFound);
+    socket.on('unable_to_join_game', handleUnableToJoinGame);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.room_id, gameState, socket]);
 
   return (
-    <div className="tic-tac-toe">
-      <div className="status">{status}</div>
-      <div className="board">
-        <div className="board-row">
-          {renderSquare(0)}
-          {renderSquare(1)}
-          {renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {renderSquare(3)}
-          {renderSquare(4)}
-          {renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {renderSquare(6)}
-          {renderSquare(7)}
-          {renderSquare(8)}
-        </div>
-      </div>
+    <div>
+      {gameState === "loading" && <Loading/>}
+      {gameState === "waiting_for_player_2" && <WaitingForPlayer room_id={data.room_id} />}
+      {gameState === "game_in_progress" && <GameBoard socket={socket} room_id={data.room_id} />}
     </div>
   );
 }
-
-// Function to determine the winner of the Tic Tac Toe game
-const calculateWinner = (squares) => {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
-};
 
 export default Game;

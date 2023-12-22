@@ -1,16 +1,28 @@
 import { useState } from 'react';
+import axios from 'axios';
 import '../App.css';
+import { useNavigate } from "react-router-dom";
 
 function JoinGame() {
+  const navigate = useNavigate()
+
   const [gameCode, setGameCode] = useState('');
 
   const handleInputChange = (event) => {
     setGameCode(event.target.value);
   };
 
-  const handleJoinClick = () => {
+  const handleJoinClick = async () => {
     console.log("Joining game with code:", gameCode);
-    // Add logic to handle joining the game with the entered code
+    
+    const response = await axios.post('http://127.0.0.1:5000/join_game', {room_id: gameCode});
+    const [status, message] = [response.data.status, response.data.message];
+
+    if (status === "success") {
+      navigate("/game", { state: {room_id : gameCode}});
+    } else {
+      alert(message);
+    }
   };
 
   return (
