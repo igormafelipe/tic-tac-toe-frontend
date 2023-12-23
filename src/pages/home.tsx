@@ -12,6 +12,7 @@ function App() {
     const modifiedResponse = {
       ...response.data,
       from: "create_game",
+      player: "X",
     }
     console.log(modifiedResponse)
     if (modifiedResponse.status === "success") {

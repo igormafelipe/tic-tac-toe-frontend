@@ -79,9 +79,12 @@ function Game() {
 
   return (
     <div>
-      {gameState === "loading" && <Loading/>}
-      {gameState === "waiting_for_player_2" && <WaitingForPlayer room_id={data.room_id} />}
-      {gameState === "game_in_progress" && <GameBoard socket={socket} room_id={data.room_id} />}
+      {gameState === "loading" && 
+        <Loading/>}
+      {gameState === "waiting_for_player_2" && 
+        <WaitingForPlayer room_id={data.room_id} player={data.player} />}
+      {gameState === "game_in_progress" && 
+        <GameBoard socket={socket} room_id={data.room_id} player={data.player}/>}
     </div>
   );
 }

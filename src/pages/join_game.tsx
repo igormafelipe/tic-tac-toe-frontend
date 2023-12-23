@@ -19,7 +19,7 @@ function JoinGame() {
     const [status, message] = [response.data.status, response.data.message];
 
     if (status === "success") {
-      navigate("/game", { state: {room_id : gameCode}});
+      navigate("/game", { state: {room_id : gameCode, player: "O"}});
     } else {
       alert(message);
     }
