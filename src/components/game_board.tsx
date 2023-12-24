@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "../game_board.css";
 
 function makeBoard() {
@@ -7,69 +6,104 @@ function makeBoard() {
 }
 
 function GameBoard(props) {
-    const X = "X";
-    const O = "O";
     const EMPTY = " ";
     const FREE_MOVE = -1;
-    const ERROR = -2;
-    
-    const navigate = useNavigate();
-
-    // if (props.player) {
-    //     navigate("/");
-    // }
 
     const [board, setBoard] = useState([[makeBoard(), makeBoard(), makeBoard()],
                                         [makeBoard(), makeBoard(), makeBoard()],
                                         [makeBoard(), makeBoard(), makeBoard()]]);
     const [turn, setTurn] = useState("X");
     const [boardToPlay, setBoardToPlay] = useState(FREE_MOVE);
-    const [winner, setWinner] = useState(EMPTY);
     const [boardWinner, setBoardWinner] = useState([[EMPTY, EMPTY, EMPTY], 
                                                     [EMPTY, EMPTY, EMPTY], 
                                                     [EMPTY, EMPTY, EMPTY]]);
+    const [gameWinner, setGameWinner] = useState(EMPTY);
+    const [updateFailed, setUpdateFailed] = useState(false);
+    
+    useEffect(() => {
+        // To Do: Make this more elegant by having some modal or something
+        props.socket.on("board_update_failed", (data) => {
+            setUpdateFailed(true);
+        });
 
-    // To Do: Make this more elegant
-    props.socket.on("board_update_failed", (data) => {
-        alert("Invalid move");
-        console.log(data);
-    });
+        props.socket.on("board_updated", (data) => {
+            // update the local board
+            const x = data.x;
+            const y = data.y;
+            const boardToPlay = data.board; // number between 0 and 8
+            const boardToPlayX = Math.floor(boardToPlay / 3);
+            const boardToPlayY = boardToPlay % 3;
+            const player = data.player;
 
-    props.socket.on("board_updated", (data) => {
-        // update the local board
-        const x = data.x;
-        const y = data.y;
-        const boardToPlay = data.board; // number between 0 and 8
-        const boardToPlayX = Math.floor(boardToPlay / 3);
-        const boardToPlayY = boardToPlay % 3;
-        const player = data.player;
+            if (x === null || y === null || boardToPlay === null || player === null) {
+                return;
+            }
 
-        if (x === null || y === null || boardToPlay === null || player === null) {
-            return;
+            // Update is working but wrong board is being updated
+            const new_board = [...board];
+            console.log(new_board);
+            new_board[boardToPlayY][boardToPlayX][y][x] = player;
+            console.log(new_board);
+            setBoard(new_board);
+        });	
+
+        props.socket.on("change_turn", (data) => {
+            // update the next board and the turn of the players
+            // update the local board
+            console.log(data);
+            const boardToPlay = data.board;
+            const next_player = data.next_player;
+    
+            setBoardToPlay(boardToPlay);
+            setTurn(next_player);
+        });
+
+        props.socket.on("local_board_winner", (data) => {
+            const boardWon = data.board;
+            const winner = data.winner;
+
+            const boardWonX = Math.floor(boardWon / 3);
+            const boardWonY = boardWon % 3;
+
+            const new_board_winner = [...boardWinner];
+            new_board_winner[boardWonY][boardWonX] = winner;
+            setBoardWinner(new_board_winner);
+        });
+
+        // To do, make it elegant and not just an alert
+        props.socket.on("game_winner", (data) => {
+            const winner = data.winner;
+            setGameWinner(winner);
+            alert("Game over, winner is " + winner);
+        });
+
+        // To do, make it elegant and not just an alert
+        props.socket.on("game_draw", () => {
+            setGameWinner("DRAW");
+            alert("Game over, it's a draw");
+        });
+
+        props.socket.on("player_left", (data) => {
+            alert("A player has left the room, waiting for another player to join");
+        });
+
+        return () => {
+            props.socket.off("board_update_failed");
+            props.socket.off("board_updated");
+            props.socket.off("change_turn");
+            props.socket.off("local_board_winner");
+            props.socket.off("game_winner");
+            props.socket.off("game_draw");
         }
-
-        // Update is working but wrong board is being updated
-        const new_board = [...board];
-        console.log(new_board);
-        new_board[boardToPlayY][boardToPlayX][y][x] = player;
-        console.log(new_board);
-        setBoard(new_board);
-    });	
-
-    props.socket.on("change_turn", (data) => {
-        // update the next board and the turn of the players
-        // update the local board
-        console.log(data);
-        const boardToPlay = data.board;
-        const next_player = data.next_player;
- 
-        setBoardToPlay(boardToPlay);
-        setTurn(next_player);
-    });
+    }, [props.socket, props.room_id]);
 
     const handleMove = (rowIndex, colIndex) => {
         if (turn !== props.player) {
             console.log("Not your turn");
+            return;
+        }
+
+        if (gameWinner !== EMPTY) {
             return;
         }
         
@@ -82,7 +116,7 @@ function GameBoard(props) {
         const board_index = board_y_index * 3 + board_x_index;
 
         if (boardToPlay !== FREE_MOVE && boardToPlay !== board_index) {
-            alert("Invalid move")
+            alert("Invalid move");
             return;
         }
 
@@ -105,7 +139,12 @@ function GameBoard(props) {
                                         {board_.map((cell, cellIndex) => (
                                             <div
                                                 key={cellIndex}
-                                                className="cell"
+                                                className={
+                                                    (boardToPlay === -1 && "active_cell") ||
+                                                    (boardToPlay === colIndex * 3 + rowIndex && "active_cell") ||
+                                                    "inactive_cell"
+                                                }
+
                                                 onClick={() =>
                                                     handleMove(
                                                         rowIndex * 3 + boardIndex,
@@ -128,10 +167,17 @@ function GameBoard(props) {
     
 
     return (
-        <div>
-            <h1>Room {props.room_id}</h1>
-            <h1>Playing as {props.player}</h1>
-            <h1>{turn}'s turn, play on board {boardToPlay}</h1>
+        <div className="game-container">
+            <div className="game-information">
+                <h2 className="title">Ultimate Tic Tac Toe</h2>
+                <h2>Room {props.room_id}</h2>
+                <h2>Playing as {props.player}</h2>
+                {/* <h2>{turn}'s turn, play on board {boardToPlay}</h2> */}
+            </div>
+            <div className="turn">
+                {turn == props.player ? <h2 className="your_turn">Your turn</h2> : 
+                                        <h2 className="opponent_turn">Opponent's turn</h2>}
+            </div>
             <div className="game-board">
                 {renderBoard()}
             </div>
