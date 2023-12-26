@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
-import '../App.css';
+import '../css/App.css';
 import { useNavigate } from "react-router-dom";
+import { O } from '../constants/constants';
 
 function JoinGame() {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ function JoinGame() {
     const [status, message] = [response.data.status, response.data.message];
 
     if (status === "success") {
-      navigate("/game", { state: {room_id : gameCode, player: "O"}});
+      navigate("/game", { state: {room_id : gameCode, player: O}});
     } else {
       alert(message);
     }

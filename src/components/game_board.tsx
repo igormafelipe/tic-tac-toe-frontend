@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import "../game_board.css";
+import "../css/game_board.css";
+import { X, O, EMPTY, FREE_MOVE } from "../constants/constants";
 
 function makeBoard() {
-    return [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]];
+    return [[EMPTY, EMPTY, EMPTY], 
+            [EMPTY, EMPTY, EMPTY], 
+            [EMPTY, EMPTY, EMPTY]];
 }
 
 function GameBoard(props) {
-    const EMPTY = " ";
-    const FREE_MOVE = -1;
-
     const [board, setBoard] = useState([[makeBoard(), makeBoard(), makeBoard()],
                                         [makeBoard(), makeBoard(), makeBoard()],
                                         [makeBoard(), makeBoard(), makeBoard()]]);
@@ -60,14 +60,16 @@ function GameBoard(props) {
 
         props.socket.on("local_board_winner", (data) => {
             const boardWon = data.board;
+            console.log("board won: " + boardWon);
             const winner = data.winner;
 
-            const boardWonX = Math.floor(boardWon / 3);
-            const boardWonY = boardWon % 3;
+            const boardWonY = Math.floor(boardWon / 3);
+            const boardWonX = boardWon % 3;
 
             const new_board_winner = [...boardWinner];
             new_board_winner[boardWonY][boardWonX] = winner;
             setBoardWinner(new_board_winner);
+            console.log(boardWinner);
         });
 
         // To do, make it elegant and not just an alert
@@ -140,6 +142,8 @@ function GameBoard(props) {
                                             <div
                                                 key={cellIndex}
                                                 className={
+                                                    (boardWinner[colIndex][rowIndex] == props.player && "your_winner_cell") ||
+                                                    (boardWinner[colIndex][rowIndex] != EMPTY && "opponent_winner_cell") ||
                                                     (boardToPlay === -1 && "active_cell") ||
                                                     (boardToPlay === colIndex * 3 + rowIndex && "active_cell") ||
                                                     "inactive_cell"

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import '../App.css';
+import '../css/App.css';
 import io from 'socket.io-client';
 import { useNavigate } from "react-router-dom";
 import WaitingForPlayer from '../components/waiting_for_player';

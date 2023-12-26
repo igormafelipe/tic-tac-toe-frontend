@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-import '../App.css';
+import '../css/App.css';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { X } from '../constants/constants';
 
 function App() {
   const navigate = useNavigate()
@@ -12,7 +11,7 @@ function App() {
     const modifiedResponse = {
       ...response.data,
       from: "create_game",
-      player: "X",
+      player: X,
     }
     console.log(modifiedResponse)
     if (modifiedResponse.status === "success") {

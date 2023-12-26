@@ -85,7 +85,11 @@
 }
 
 .active_cell:hover {
-    background-color: rgb(140, 218, 170);
+    background-color: #b7dfe7;
+}
+
+.active_cell:hover ::before {
+    border:hwb(from color h w b);
 }
 
 .inactive_cell {
@@ -104,6 +108,46 @@
     border-radius: 8%;
 }
 
+.your_winner_cell {
+    width: 60px;
+    height: 60px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: .2s;
+    border-radius: 8%;
+    background-color: rgb(72, 185, 72);
+    color: white;
+}
+
+.your_winner_cell:hover {
+    background-color: rgb(140, 218, 170);
+}
+
+.opponent_winner_cell {
+    width: 60px;
+    height: 60px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: .2s;
+    border-radius: 8%;
+    background-color: rgb(238, 78, 78);
+    color: white;
+}
+
+.opponent_winner_cell:hover {
+    background-color: rgb(255, 153, 153);
+}
+
 .inactive_cell:hover {
-    background-color: rgb(218, 140, 140);
+    background-color: rgb(171, 171, 171);
 }
