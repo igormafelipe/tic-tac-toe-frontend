@@ -77,13 +77,11 @@ function GameBoard(props) {
         props.socket.on("game_winner", (data) => {
             const winner = data.winner;
             setGameWinner(winner);
-            alert("Game over, winner is " + winner);
         });
 
         // To do, make it elegant and not just an alert
         props.socket.on("game_draw", () => {
             setGameWinner("DRAW");
-            alert("Game over, it's a draw");
         });
 
         props.socket.on("player_left", (data) => {

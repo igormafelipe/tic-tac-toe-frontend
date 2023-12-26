@@ -73,7 +73,7 @@ function GameWinner(props) {
             }
             <div className="turn">
                 {props.winner == props.player ? <h2 className="your_turn">YOU WON!</h2> : 
-                                        <h2 className="opponent_turn">YOU LOST!</h2>}
+                                        <h2 className="opponent_turn">BETTER LUCK NEXT TIME</h2>}
             </div>
             <div className="game-board">
                 {renderBoard()}
