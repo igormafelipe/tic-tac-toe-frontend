@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "../css/game_board.css";
-import { X, O, EMPTY, FREE_MOVE } from "../constants/constants";
+import { EMPTY, FREE_MOVE } from "../constants/constants";
+import GameWinner from "../components/game_winner";
 
 function makeBoard() {
     return [[EMPTY, EMPTY, EMPTY], 
@@ -171,21 +172,28 @@ function GameBoard(props) {
     
 
     return (
-        <div className="game-container">
-            <div className="game-information">
-                <h2 className="title">Ultimate Tic Tac Toe</h2>
-                <h2>Room {props.room_id}</h2>
-                <h2>Playing as {props.player}</h2>
-                {/* <h2>{turn}'s turn, play on board {boardToPlay}</h2> */}
-            </div>
-            <div className="turn">
-                {turn == props.player ? <h2 className="your_turn">Your turn</h2> : 
-                                        <h2 className="opponent_turn">Opponent's turn</h2>}
-            </div>
-            <div className="game-board">
-                {renderBoard()}
-            </div>
+        <div>
+            {gameWinner !== EMPTY && 
+                <GameWinner boardWinner={boardWinner} board={board} player={props.player} winner={gameWinner}/>
+            }
+            {gameWinner === EMPTY && 
+                <div className="game-container">
+                    <div className="game-information">
+                        <h2 className="title">Ultimate Tic Tac Toe</h2>
+                        <h2>Room {props.room_id}</h2>
+                        <h2>Playing as {props.player}</h2>
+                    </div>
+                    <div className="turn">
+                        {turn == props.player ? <h2 className="your_turn">Your turn</h2> : 
+                                                <h2 className="opponent_turn">Opponent's turn</h2>}
+                    </div>
+                    <div className="game-board">
+                        {renderBoard()}
+                    </div>
+                </div>
+            }
         </div>
+
     );
 }
 
