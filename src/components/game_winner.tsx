@@ -1,5 +1,6 @@
 import "../css/game_board.css";
 import "../css/confetti.scss";
+import "../css/rain.scss";
 import { EMPTY } from "../constants/constants";
 
 function GameWinner(props) {
@@ -38,19 +39,38 @@ function GameWinner(props) {
 
     return (
         <div className="game-container">
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
-            <div className="confetti-piece"></div>
+            {props.winner == props.player ? 
+                <div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                    <div className="confetti-piece"></div>
+                </div> : 
+                <div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+                    <div className="rain-piece"></div>
+            </div>
+            }
             <div className="turn">
                 {props.winner == props.player ? <h2 className="your_turn">YOU WON!</h2> : 
                                         <h2 className="opponent_turn">YOU LOST!</h2>}

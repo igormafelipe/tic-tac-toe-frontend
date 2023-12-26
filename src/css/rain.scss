@@ -1,6 +1,6 @@
-$yellow: #ffd300;
+$white: #8de8f0;
 $blue: #17d3ff;
-$pink: #ff4e91;
+$dark-blue: #2e77c4;
 
 $duration: 1000;
 
@@ -18,7 +18,7 @@ $duration: 1000;
   position: relative;
 }
 
-.confetti {
+.rain {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,26 +28,25 @@ $duration: 1000;
   overflow: hidden;
 }
 
-.confetti-piece {
+.rain-piece {
   position: absolute;
-  width: 8px;
-  height: 16px;
-  background: $yellow;
+  width: 1px;
+  height: 6px;
+  background: $blue;
   top: 0;
   opacity: 0;
   
   @for $i from 1 through 13 {
     &:nth-child(#{$i}) {
       left: $i * 7%;
-      transform: rotate(#{randomNum(-80, 80)}deg);
-      animation: makeItConfetti $duration * 1ms infinite ease-out;
+      animation: makeItRain $duration * 1ms infinite ease-out;
       animation-delay: #{randomNum(0, $duration * .5)}ms;
       animation-duration: #{randomNum($duration * .7, $duration * 1.2)}ms
     }
   }
   
   &:nth-child(odd) {
-    background: $blue;
+    background: $dark-blue;
   }
   
   &:nth-child(even) {
@@ -55,24 +54,24 @@ $duration: 1000;
   }
   
   &:nth-child(4n) {
-    width: 5px;
+    width: 1px;
     height: 12px;
     animation-duration: $duration * 2ms;
   }
   
   &:nth-child(3n) {
-    width: 3px;
+    width: 1px;
     height: 10px;
     animation-duration: $duration * 2.5ms;
     animation-delay: $duration * 1ms;
   }
   
   &:nth-child(4n-7) {
-    background: $pink;
+    background: $white;
   }
 }
 
-@keyframes makeItConfetti {
+@keyframes makeItRain {
   from {
     opacity: 0;
   }
@@ -82,6 +81,6 @@ $duration: 1000;
   }
   
   to {
-    transform: translateY(200px);
+    transform: translateY(600px);
   }
 }
